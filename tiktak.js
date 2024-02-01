@@ -273,22 +273,22 @@ document.addEventListener('DOMContentLoaded', function () {
         return true; // All cells are filled, and no winner
     }
 
-    function makeAIMove() {
-        const emptyCells = document.querySelectorAll('.cell:not(.X):not(.O)');
-        if (emptyCells.length > 0) {
-            // Choose a random empty cell
-            const randomIndex = Math.floor(Math.random() * emptyCells.length);
-            const randomCell = emptyCells[randomIndex];
-            const row = randomCell.dataset.row;
-            const col = randomCell.dataset.col;
+   function makeAIMove() {
+    const emptyCells = document.querySelectorAll('.cell:not(.X):not(.O)');
+    if (emptyCells.length > 0) {
+        // Choose a random empty cell
+        const randomIndex = Math.floor(Math.random() * emptyCells.length);
+        const randomCell = emptyCells[randomIndex];
+        const row = randomCell.dataset.row;
+        const col = randomCell.dataset.col;
 
-            // Simulate a click on the randomly chosen cell
-            handleCellClick({ target: randomCell });
+        // Simulate a click on the randomly chosen cell
+        handleCellClick({ target: randomCell });
 
-            // Update the current player to switch back to the human player
-            currentPlayer = 'X';
-        }
+        // Do not update the current player here
+        // currentPlayer = 'X';
     }
+}
 
     // Event listener for changing settings or difficulties
     categoryDropdown.addEventListener('change', function () {
