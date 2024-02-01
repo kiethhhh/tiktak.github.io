@@ -92,18 +92,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Switch to the next player
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     
-                // If the next player is AI, make an automatic move
-                if (currentPlayer === 'O' && playersDropdown.value === 'AIvsHuman') {
-                    makeAIMove();
-                }
-    
                 // Check for points based on connecting blocks
                 if (checkPoints(parseInt(row), parseInt(col))) {
                     return; // Return early to prevent calling checkPoints again
                 }
+    
+                // If the next player is AI, make an automatic move after a short delay
+                if (currentPlayer === 'O' && playersDropdown.value === 'AIvsHuman') {
+                    setTimeout(makeAIMove, 500); // Adjust the delay time as needed
+                }
             }
         }
     }
+    
     
     
 
@@ -273,22 +274,101 @@ document.addEventListener('DOMContentLoaded', function () {
         return true; // All cells are filled, and no winner
     }
 
-   function makeAIMove() {
-    const emptyCells = document.querySelectorAll('.cell:not(.X):not(.O)');
-    if (emptyCells.length > 0) {
-        // Choose a random empty cell
-        const randomIndex = Math.floor(Math.random() * emptyCells.length);
-        const randomCell = emptyCells[randomIndex];
-        const row = randomCell.dataset.row;
-        const col = randomCell.dataset.col;
+    function makeAIMove() {
+        const emptyCells = document.querySelectorAll('.cell:not(.X):not(.O)');
+        const difficulty = playersDropdown.value;
 
-        // Simulate a click on the randomly chosen cell
-        handleCellClick({ target: randomCell });
+        switch (difficulty) {
+            case 'Easy':
+                makeRandomMove(emptyCells);
+                break;
 
-        // Do not update the current player here
-        // currentPlayer = 'X';
+            case 'Medium':
+                makeSlightlySmartMove(emptyCells);
+                break;
+
+            case 'Hard':
+                makeAdvancedMove(emptyCells);
+                break;
+
+            default:
+                makeRandomMove(emptyCells);
+                break;
+        }
+
+        currentPlayer = 'X';
     }
-}
+
+    function makeRandomMove(emptyCells) {
+        if (emptyCells.length > 0) {
+            const randomIndex = Math.floor(Math.random() * emptyCells.length);
+            const randomCell = emptyCells[randomIndex];
+            simulateClick(randomCell);
+        }
+    }
+
+    function makeSlightlySmartMove(emptyCells) {
+        const winningMove = findWinningMove(emptyCells);
+        if (winningMove) {
+            simulateClick(winningMove);
+        } else {
+            makeRandomMove(emptyCells);
+        }
+    }
+
+    function findWinningMove(emptyCells) {
+        for (const cell of emptyCells) {
+            cell.textContent = currentPlayer;
+
+            if (checkWinner(parseInt(cell.dataset.row), parseInt(cell.dataset.col))) {
+                cell.textContent = '';
+                return cell;
+            }
+
+            cell.textContent = '';
+        }
+
+        return null;
+    }
+
+    function makeAdvancedMove(emptyCells) {
+        const winningMove = findWinningMove(emptyCells);
+        
+        if (winningMove) {
+            simulateClick(winningMove);
+        } else {
+            makeSlightlySmartMove(emptyCells);
+        }
+    }
+    
+    function findWinningMove(emptyCells) {
+        for (const cell of emptyCells) {
+            // Simulate placing a move in the cell
+            cell.textContent = currentPlayer;
+    
+            // Check if the move results in a win
+            if (checkWinner(parseInt(cell.dataset.row), parseInt(cell.dataset.col))) {
+                cell.textContent = ''; // Reset the cell content
+                return cell;
+            }
+    
+            // Reset the cell content for the next iteration
+            cell.textContent = '';
+        }
+    
+        // If no winning move found, return null
+        return null;
+    }
+    
+
+    function simulateClick(cell) {
+        const event = new Event('click');
+        cell.dispatchEvent(event);
+    }
+
+
+            // Update the current player to switch back to the human player
+            currentPlayer = 'X';
 
     // Event listener for changing settings or difficulties
     categoryDropdown.addEventListener('change', function () {
