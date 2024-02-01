@@ -65,45 +65,46 @@ document.addEventListener('DOMContentLoaded', function () {
     
 
     function handleCellClick(event) {
-        const clickedCell = event.target;
-        const row = clickedCell.dataset.row;
-        const col = clickedCell.dataset.col;
-    
-        // Check if the cell is empty
-        if (!clickedCell.textContent) {
-            // Update the cell with the current player
-            clickedCell.textContent = currentPlayer;
-    
-            // Check for a winner
-            if (checkWinner(parseInt(row), parseInt(col))) {
-                alert(`Player ${currentPlayer} wins!`);
-    
-                // Delay the reset to show the winning move
-                setTimeout(function () {
-                    scores[currentPlayer]++;
-                    updateScores();
-                    resetBoard();
-                }, 1000); // Adjust the delay time as needed
-            } else if (checkDraw()) {
-                alert("It's a draw!");
+    const clickedCell = event.target;
+    const row = clickedCell.dataset.row;
+    const col = clickedCell.dataset.col;
+
+    // Check if the cell is empty
+    if (!clickedCell.textContent) {
+        // Update the cell with the current player
+        clickedCell.textContent = currentPlayer;
+
+        // Check for a winner
+        if (checkWinner(parseInt(row), parseInt(col))) {
+            alert(`Player ${currentPlayer} wins!`);
+            
+            // Reset the board after a short delay to show the winning move
+            setTimeout(function () {
+                scores[currentPlayer]++;
                 updateScores();
                 resetBoard();
-            } else {
-                // Switch to the next player
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    
-                // Check for points based on connecting blocks
-                if (checkPoints(parseInt(row), parseInt(col))) {
-                    return; // Return early to prevent calling checkPoints again
-                }
-    
-                // If the next player is AI, make an automatic move after a short delay
-                if (currentPlayer === 'O' && playersDropdown.value === 'AIvsHuman') {
-                    setTimeout(makeAIMove, 500); // Adjust the delay time as needed
-                }
+            }, 1000); // Adjust the delay time as needed
+        } else if (checkDraw()) {
+            alert("It's a draw!");
+            updateScores();
+            resetBoard();
+        } else {
+            // Switch to the next player
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+            // Check for points based on connecting blocks
+            if (checkPoints(parseInt(row), parseInt(col))) {
+                return; // Return early to prevent calling checkPoints again
+            }
+
+            // If the next player is AI, make an automatic move without delay
+            if (currentPlayer === 'O' && playersDropdown.value === 'AIvsHuman') {
+                makeAIMove();
             }
         }
     }
+}
+
     
     
     
